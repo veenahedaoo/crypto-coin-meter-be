@@ -91,3 +91,6 @@ yarn-debug.log*
 /config/*.key
 
 /public/uploads
+
+# Ignore key files for decrypting credentials and more.
+/config/credentials/*.key
