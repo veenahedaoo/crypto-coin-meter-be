@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_155915) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_04_094705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,5 +33,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_155915) do
     t.string "volume"
     t.index ["coingecko_symbol"], name: "index_coin_lists_on_coingecko_symbol", unique: true
     t.index ["symbol_name"], name: "index_coin_lists_on_symbol_name"
+  end
+
+  create_table "exchanges", force: :cascade do |t|
+    t.string "coingecko_exchange_id", null: false
+    t.integer "coins"
+    t.string "country"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.boolean "enabled", default: false
+    t.string "exchange_name", null: false
+    t.string "facebook_url"
+    t.string "image_url"
+    t.string "pairs"
+    t.string "reddit_url"
+    t.string "twitter_handler"
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.integer "year_established", default: 0
   end
 end

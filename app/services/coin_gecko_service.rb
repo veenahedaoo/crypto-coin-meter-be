@@ -41,6 +41,55 @@ class CoinGeckoService
     end
   end
 
+  def get_market_data(coin_ids)
+    connection = Faraday.new(url: BASE_URL)
+    url = "coins/markets"
+    response = connection.get(url) do |req|
+      req.headers['x-cg-demo-api-key'] = Rails.application.credentials.dig(:coingecko, :api_key)
+      req.params['vs_currency'] = "usd"
+      req.params['ids'] = coin_ids
+    end
+    if response.status == 429
+      {error: true}
+    else
+      JSON.parse(response.body, symbolize_names: true)
+    end
+  end
+
+  def get_exchange_list
+    connection = Faraday.new(url: BASE_URL)
+    response = connection.get("exchanges/list") do |req|
+      req.headers['x-cg-demo-api-key'] = Rails.application.credentials.dig(:coingecko, :api_key)
+    end
+    if response.status == 200
+      response_json = JSON.parse(response.body, symbolize_names: true)
+      response_json.each_slice(100) do |exchange_in_batch|
+        exchange_data = exchange_in_batch.map do |exchange|
+          {
+            coingecko_exchange_id: exchange[:id],
+            exchange_name: exchange[:name],
+          }
+        end
+        Exchange.insert_all(exchange_data)
+        puts "#{exchange_in_batch.length} Exchanges inserted"
+      end
+    end
+  end
+
+  def get_exchange_data(exchange_id)
+    connection = Faraday.new(url: BASE_URL)
+    response = connection.get("exchanges/#{exchange_id}") do |req|
+      req.headers['x-cg-demo-api-key'] = Rails.application.credentials.dig(:coingecko, :api_key)
+    end
+    if response.status == 200
+      JSON.parse(response.body, symbolize_names: true)
+    else
+      {error: true}
+    end
+  end
+
+
+
   private
   def fetch_coins_from_api(connection, page, per_page = 100)
     response = connection.get("coins/markets") do |req|

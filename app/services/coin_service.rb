@@ -7,4 +7,5 @@ class CoinService
       query.where!(is_active: is_active) unless is_active.nil?
     end
   end
+
 end

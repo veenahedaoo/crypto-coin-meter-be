@@ -1,5 +1,5 @@
 class Api::V1::BaseController < ActionController::API
-
+  include Pagy::Backend
   protected
   def cast_boolean(value)
     ActiveModel::Type::Boolean.new.cast(value)

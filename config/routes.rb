@@ -9,7 +9,9 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :coins, only: :index
+      resources :coins, only: [:index, :show]
+      resources :exchanges, only: [:index, :show]
+      resources :fear_n_greed_index, only: [:index]
     end
   end
 end

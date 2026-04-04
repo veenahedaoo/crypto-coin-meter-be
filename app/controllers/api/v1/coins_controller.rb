@@ -1,5 +1,4 @@
 class Api::V1::CoinsController < Api::V1::BaseController
-  include Pagy::Backend
   def index
     errors = validate_params
     return render json: {errors: errors}, status: :unprocessable_entity if errors.present?
@@ -14,6 +13,19 @@ class Api::V1::CoinsController < Api::V1::BaseController
       next_page: pagy.next,
       prev_page: pagy.prev,
       page: pagy.page,
+    }
+  end
+
+  def show
+    coin_id = params[:id]
+    coin_data_from_db = CoinList.find(coin_id)
+    coin_data_from_ext_res = CoinGeckoService.new.get_market_data(coin_data_from_db.coingecko_symbol)
+    render json: {
+      status: 200,
+      data: {
+        coin: coin_data_from_db,
+        market_data: coin_data_from_ext_res[0],
+      },
     }
   end
 

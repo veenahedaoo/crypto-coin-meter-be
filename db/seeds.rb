@@ -8,4 +8,5 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 # initialize coins list from coingecko
-CoinGeckoService.new.init_coins_list
+# CoinGeckoService.new.init_coins_list
+CoinGeckoService.new.get_exchange_list
