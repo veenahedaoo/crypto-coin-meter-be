@@ -94,3 +94,6 @@ yarn-debug.log*
 
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
+# Ignore key files for decrypting credentials and more.
+/config/credentials/*.key
+
