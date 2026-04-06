@@ -88,7 +88,40 @@ class CoinGeckoService
     end
   end
 
+  def get_global_market_data
+    connection = Faraday.new(url: BASE_URL)
+    response = connection.get("global") do |req|
+      req.headers['x-cg-demo-api-key'] = Rails.application.credentials.dig(:coingecko, :api_key)
+    end
+    if response.status == 200
+      JSON.parse(response.body, symbolize_names: true)
+    else
+      {error: true}
+    end
+  end
 
+  def get_chart_data(symbol_name, days=1, chart_type)
+    connection = Faraday.new(url: BASE_URL)
+    response = connection.get("coins/#{symbol_name}/market_chart") do |req|
+      req.headers['x-cg-demo-api-key'] = Rails.application.credentials.dig(:coingecko, :api_key)
+      req.params['vs_currency'] = "usd"
+      req.params['days'] = days
+    end
+    if response.status == 200
+      response_json = JSON.parse(response.body, symbolize_names: true)
+      response_json[:prices].map do |price|
+        price[0] = Time.at(price[0].to_i / 1000).in_time_zone('Asia/Kolkata').strftime('%d %b, %Y %I:%M %p')
+      end if chart_type.nil? || chart_type == 'prices'
+      response_json[:market_caps].map do |market_cap|
+        market_cap[0] = Time.at(market_cap[0].to_i / 1000).in_time_zone('Asia/Kolkata').strftime('%d %b, %Y %I:%M %p')
+      end if chart_type.nil? || chart_type == 'market_caps'
+      response_json[:total_volumes].map do |volume|
+        volume[0] = Time.at(volume[0].to_i / 1000).in_time_zone('Asia/Kolkata').strftime('%d %b, %Y %I:%M %p')
+      end if chart_type.nil? || chart_type == 'total_volumes'
+      chart_data = chart_type.present? ? response_json[chart_type.to_sym] : response_json
+    end
+    chart_data
+  end
 
   private
   def fetch_coins_from_api(connection, page, per_page = 100)

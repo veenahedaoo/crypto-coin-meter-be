@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       resources :coins, only: [:index, :show]
       resources :exchanges, only: [:index, :show]
       resources :fear_n_greed_index, only: [:index]
+      resources :charts, only: [:index, :show]
+      get "global_market_data" => "market_data#global_market_data"
     end
   end
 end
